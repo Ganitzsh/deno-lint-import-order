@@ -1,0 +1,12 @@
+{
+  "name": "@ayk/lint-import-order",
+  "version": "0.1.0",
+  "exports": "./import-order.ts",
+  "tasks": {
+    "dev": "deno test --watch"
+  },
+  "license": "MIT",
+  "lint": {
+    "plugins": ["./import-order.ts"]
+  }
+}
