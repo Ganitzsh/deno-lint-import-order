@@ -13,6 +13,6 @@
   },
   "license": "MIT",
   "lint": {
-    "plugins": ["./import-order.ts"]
+    "plugins": ["./import-order-with-spacing.ts"]
   }
 }

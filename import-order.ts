@@ -123,11 +123,79 @@ const needsReordering = (
   return sortedImports.some((node, index) => node !== importNodes[index]);
 };
 
+const hasIncorrectSpacing = (
+  importNodes: Deno.lint.ImportDeclaration[],
+  groups: ImportGroup[],
+  context: Deno.lint.RuleContext
+) => {
+  let nodeIndex = 0;
+
+  for (let groupIdx = 0; groupIdx < groups.length; groupIdx++) {
+    const group = groups[groupIdx];
+    const isLastGroup = groupIdx === groups.length - 1;
+
+    for (let i = 0; i < group.imports.length; i++) {
+      const isLastInGroup = i === group.imports.length - 1;
+
+      if (!isLastGroup && isLastInGroup && nodeIndex < importNodes.length - 1) {
+        const currentNode = importNodes[nodeIndex];
+        const nextNode = importNodes[nodeIndex + 1];
+
+        const textBetween = context.sourceCode.getText({
+          range: [currentNode.range[1], nextNode.range[0]],
+        } as Deno.lint.Node);
+
+        const newlineCount = (textBetween.match(/\n/g) || []).length;
+        if (newlineCount < 2) {
+          return true;
+        }
+      }
+      nodeIndex++;
+    }
+  }
+
+  return false;
+};
+
 const needsExportReordering = (
   exportNodes: Deno.lint.ExportNamedDeclaration[],
   sortedExports: Deno.lint.ExportNamedDeclaration[]
 ) => {
   return sortedExports.some((node, index) => node !== exportNodes[index]);
+};
+
+const hasIncorrectExportSpacing = (
+  exportNodes: Deno.lint.ExportNamedDeclaration[],
+  groups: ExportGroup[],
+  context: Deno.lint.RuleContext
+) => {
+  let nodeIndex = 0;
+
+  for (let groupIdx = 0; groupIdx < groups.length; groupIdx++) {
+    const group = groups[groupIdx];
+    const isLastGroup = groupIdx === groups.length - 1;
+
+    for (let i = 0; i < group.exports.length; i++) {
+      const isLastInGroup = i === group.exports.length - 1;
+
+      if (!isLastGroup && isLastInGroup && nodeIndex < exportNodes.length - 1) {
+        const currentNode = exportNodes[nodeIndex];
+        const nextNode = exportNodes[nodeIndex + 1];
+
+        const textBetween = context.sourceCode.getText({
+          range: [currentNode.range[1], nextNode.range[0]],
+        } as Deno.lint.Node);
+
+        const newlineCount = (textBetween.match(/\n/g) || []).length;
+        if (newlineCount < 2) {
+          return true;
+        }
+      }
+      nodeIndex++;
+    }
+  }
+
+  return false;
 };
 
 const getReportRange = (
@@ -282,9 +350,22 @@ export const createImportOrderPlugin = (
               if (sortImports && importNodes.length > 1) {
                 const groups = groupAndSortImports(importNodes);
                 const sortedImports = flattenGroups(groups);
+                const needsReorder = needsReordering(
+                  importNodes,
+                  sortedImports
+                );
+                const needsSpacingFix =
+                  spaceBetweenGroups &&
+                  groups.length > 1 &&
+                  hasIncorrectSpacing(importNodes, groups, context);
 
-                if (needsReordering(importNodes, sortedImports)) {
-                  const range = getReportRange(importNodes, sortedImports);
+                if (needsReorder || needsSpacingFix) {
+                  const range: Deno.lint.Range = needsReorder
+                    ? getReportRange(importNodes, sortedImports)
+                    : [
+                        importNodes[0].range[0],
+                        importNodes[importNodes.length - 1].range[1],
+                      ];
 
                   context.report({
                     range,
@@ -313,12 +394,22 @@ export const createImportOrderPlugin = (
               if (sortExports && exportNodes.length > 1) {
                 const groups = groupAndSortExports(exportNodes);
                 const sortedExports = flattenExportGroups(groups);
+                const needsReorder = needsExportReordering(
+                  exportNodes,
+                  sortedExports
+                );
+                const needsSpacingFix =
+                  spaceBetweenGroups &&
+                  groups.length > 1 &&
+                  hasIncorrectExportSpacing(exportNodes, groups, context);
 
-                if (needsExportReordering(exportNodes, sortedExports)) {
-                  const range = getExportReportRange(
-                    exportNodes,
-                    sortedExports
-                  );
+                if (needsReorder || needsSpacingFix) {
+                  const range: Deno.lint.Range = needsReorder
+                    ? getExportReportRange(exportNodes, sortedExports)
+                    : [
+                        exportNodes[0].range[0],
+                        exportNodes[exportNodes.length - 1].range[1],
+                      ];
 
                   context.report({
                     range,

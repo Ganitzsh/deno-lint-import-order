@@ -1,4 +1,5 @@
 import { assertEquals } from "@std/assert";
+
 import { createImportOrderPlugin } from "./import-order.ts";
 
 Deno.test("import-order - basic reordering without spacing", () => {
