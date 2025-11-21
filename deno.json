@@ -1,5 +1,5 @@
 {
-  "name": "@ayk/lint-import-order",
+  "name": "@ganitzsh/lint-import-order",
   "version": "0.1.0",
   "exports": "./import-order.ts",
   "tasks": {

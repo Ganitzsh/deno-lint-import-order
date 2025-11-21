@@ -3,6 +3,10 @@
 A Deno lint plugin that automatically orders your import statements by type and
 alphabetically.
 
+> **Note:** This is a fork of
+> [@kiritanishino/deno-lint-import-order](https://github.com/Kiritanishino/deno-lint-import-order)
+> with additional features for export sorting and configurable spacing.
+
 ## Features
 
 - Automatically categorizes imports and exports into 4 groups:
@@ -23,7 +27,7 @@ Add this to your `deno.json`:
 ```json
 {
   "lint": {
-    "plugins": ["jsr:@ayk/lint-import-order"]
+    "plugins": ["jsr:@ganitzsh/lint-import-order"]
   }
 }
 ```
@@ -54,9 +58,9 @@ The plugin supports three configuration options:
 | `sortExports`        | `boolean` | `true`  | Enable/disable export sorting                |
 | `spaceBetweenGroups` | `boolean` | `false` | Add blank lines between import/export groups |
 
-> **Note:** Deno's lint plugin API does not support passing configuration options
-> directly through `deno.json`. You must use one of the approaches below to
-> configure the plugin.
+> **Note:** Deno's lint plugin API does not support passing configuration
+> options directly through `deno.json`. You must use one of the approaches below
+> to configure the plugin.
 
 ### Default Configuration
 
@@ -65,7 +69,7 @@ By default, both imports and exports are sorted without spacing:
 ```json
 {
   "lint": {
-    "plugins": ["jsr:@ayk/lint-import-order"]
+    "plugins": ["jsr:@ganitzsh/lint-import-order"]
   }
 }
 ```
@@ -79,7 +83,7 @@ The plugin provides pre-configured exports for common use cases:
 ```json
 {
   "lint": {
-    "plugins": ["jsr:@ayk/lint-import-order/with-spacing"]
+    "plugins": ["jsr:@ganitzsh/lint-import-order/with-spacing"]
   }
 }
 ```
@@ -87,7 +91,7 @@ The plugin provides pre-configured exports for common use cases:
 Or import the named export:
 
 ```typescript
-export { importOrderWithSpacing as default } from "jsr:@ayk/lint-import-order";
+export { importOrderWithSpacing as default } from "jsr:@ganitzsh/lint-import-order";
 ```
 
 **Sort imports only:**
@@ -95,7 +99,7 @@ export { importOrderWithSpacing as default } from "jsr:@ayk/lint-import-order";
 ```json
 {
   "lint": {
-    "plugins": ["jsr:@ayk/lint-import-order/imports-only"]
+    "plugins": ["jsr:@ganitzsh/lint-import-order/imports-only"]
   }
 }
 ```
@@ -105,7 +109,7 @@ export { importOrderWithSpacing as default } from "jsr:@ayk/lint-import-order";
 ```json
 {
   "lint": {
-    "plugins": ["jsr:@ayk/lint-import-order/exports-only"]
+    "plugins": ["jsr:@ganitzsh/lint-import-order/exports-only"]
   }
 }
 ```
@@ -115,7 +119,7 @@ export { importOrderWithSpacing as default } from "jsr:@ayk/lint-import-order";
 For full control, create a configuration file:
 
 ```typescript
-import { createImportOrderPlugin } from "jsr:@ayk/lint-import-order";
+import { createImportOrderPlugin } from "jsr:@ganitzsh/lint-import-order";
 
 export default createImportOrderPlugin({
   sortImports: true,
@@ -221,7 +225,7 @@ To test this plugin in your project without publishing to JSR:
 1. Clone this repository:
 
 ```bash
-git clone https://github.com/yourusername/deno-lint-import-order.git
+git clone https://github.com/ganitzsh/deno-lint-import-order.git
 cd deno-lint-import-order
 ```
 
